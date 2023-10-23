@@ -12,7 +12,10 @@ const Home = () => {
     step: 10
   });
   const [filters,setFilters] = useState({});
-
+  /** estado que nos va aguardar el resultado del filtrado*/
+  const [resultFiltrado, setResultFiltrado] = useState([]);
+  /*respuuesta cuando no se encuentran los libros */
+  const [responseFilter, setResponseFilter] = useState('');
   useEffect(()=>{
       getBooks().then((response)=>{
         /**. then, se ejhucuta cuando la respuesta de la promesa fue satisfactia
@@ -51,8 +54,29 @@ const Home = () => {
   const onFilter = (event) =>{
  
     const {name, value} = event['target']; /** al ponerlo en corchetes podemos trabajar el onj como un array */
-    setFilters({...filters, [name]: value})
-    console.log({...filters, [name]: value});
+    const filterParamps = {...filters, [name]: value};
+    setFilters(filterParamps);
+    console.log(filterParamps);
+    if(value)
+    {
+      let copiaBooks = [...books];
+      for(const key in filterParamps)
+      {
+        if(filterParamps[key])
+        {
+          const filteredResult =  key === 'pages' ? copiaBooks.filter((element) => element.book[key] <= filterParamps[key] ) :copiaBooks.filter((element)=> element.book[key]== filterParamps[key]);
+          copiaBooks = [...filteredResult];
+        }
+      }
+      console.log('copiaBooks', copiaBooks);
+      setResultFiltrado(copiaBooks);
+      setResponseFilter(()=>copiaBooks.length? '' :'Nose encontraron resultados');
+    }else{
+      setResultFiltrado([]);
+      setResponseFilter('Filtro limpiado');
+    }
+    
+
   }
 
   return (
@@ -72,14 +96,22 @@ const Home = () => {
           </select>
         </div>
       </section>
-        {/*si books no esta bacio, vamos a recorrerlo y r cada libre imprimimos su imagen
+        {
+        responseFilter&& <h2>{responseFilter}</h2>
+        
+        /*si books no esta bacio, vamos a recorrerlo y r cada libre imprimimos su imagen
         en un etiqueta figure */}
+        
       <section className='cardContainer'>
         {
-           books.length> 0? books.map((items, index) => 
+          resultFiltrado.length > 0 ? resultFiltrado.map((items, index) => 
           <figure key={index}>
             <img src={items.book.cover} alt={items.book.title} />
-          </figure>): <div>...Cargando</div>
+          </figure>):
+          books.length> 0? books.map((items, index) => 
+            <figure key={index}>
+              <img src={items.book.cover} alt={items.book.title} />
+            </figure>): <div>...Cargando</div>
         }
       </section>
        
