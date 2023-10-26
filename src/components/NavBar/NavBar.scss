@@ -1,0 +1,13 @@
+.navContainer{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    &__link{
+        text-transform: capitalize;
+        
+    }
+    .hidder
+    {
+        display: none;
+    }
+}

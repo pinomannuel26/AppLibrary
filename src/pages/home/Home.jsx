@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import useFilter from '../../hooks/useFilter';
 import { getBooks } from '../../services/booksService';
 import './home.scss';
 
@@ -11,11 +12,19 @@ const Home = () => {
     max:1000,
     step: 10
   });
-  const [filters,setFilters] = useState({});
-  /** estado que nos va aguardar el resultado del filtrado*/
-  const [resultFiltrado, setResultFiltrado] = useState([]);
-  /*respuuesta cuando no se encuentran los libros */
-  const [responseFilter, setResponseFilter] = useState('');
+
+
+
+  //LAMNADO DEL HOOK PERSONALIZADO
+  const {filters, resultFiltrado, responseFilter, setFilters, handleFilter} = useFilter( );
+
+
+
+  // const [filters,setFilters] = useState({});
+  // /** estado que nos va aguardar el resultado del filtrado*/
+  // const [resultFiltrado, setResultFiltrado] = useState([]);
+  // /*respuuesta cuando no se encuentran los libros */
+  // const [responseFilter, setResponseFilter] = useState('');
   useEffect(()=>{
       getBooks().then((response)=>{
         /**. then, se ejhucuta cuando la respuesta de la promesa fue satisfactia
@@ -30,7 +39,7 @@ const Home = () => {
         /**obtener el umero max y minino de paginas de los libros */
         const numPages= getPages(response);
         setRagePages({...ragePages, ...numPages});/*que guarde una copia del estado y que actualize solo lo q tenga q actualizar, los nuevos valores */
-
+        setFilters({...filters, pages: ragePages.max})
       })
   },[])
 
@@ -50,10 +59,15 @@ const Home = () => {
     return {min:Math.floor(Math.min(...range)/1000)*1000, max:Math.ceil(Math.max(...range)/1000)*1000}
   }
 
-  //FUNCION PARA EXTRAER LOS VALORES DE LOS FILTROS +
+  //FUNCION PARA USAR NUESTRO HOOK PERSONALIZADO
+  const onFilter =(event)=>handleFilter(event, books);
+
+
+{/*
+  //FUNCION PARA EXTRAER LOS VALORES DE LOS FILTROS 
   const onFilter = (event) =>{
  
-    const {name, value} = event['target']; /** al ponerlo en corchetes podemos trabajar el onj como un array */
+    const {name, value} = event['target'];  al ponerlo en corchetes podemos trabajar el onj como un array 
     const filterParamps = {...filters, [name]: value};
     setFilters(filterParamps);
     console.log(filterParamps);
@@ -77,7 +91,7 @@ const Home = () => {
     }
     
 
-  }
+  }*/}
 
   return (
     <main>
